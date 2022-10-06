@@ -263,7 +263,6 @@ bool extract(T& value_out, const uint8_t* buffer, size_t bufferSize, size_t offs
 }
 
 ///@}
-///@}
 ////////////////////////////////////////////////////////////////////////////////
 
 } // namespace mip

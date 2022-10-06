@@ -161,8 +161,12 @@ public:
     // Constructors
     //
 
-    ///@copydoc mip::C::mip_interface_init
+    ///@brief Constructs a new device interface
     ///@param connection The connection object used to communicate with the device. This object must exist for the life of the DeviceInterface object
+    ///@param parseBuffer A working buffer for the MIP parser. See mip_parser_init().
+    ///@param parseBufferSize Size of the parsing buffer. Must be at least MIP_PACKET_LENGTH_MAX.
+    ///@param parseTimeout Maximum length of time to wait for the end of a MIP packet. See mip_parser_init().
+    ///@param baseReplyTimeout Minimum time for all commands. See mip_cmd_queue_init().
     DeviceInterface(Connection* connection, uint8_t* parseBuffer, size_t parseBufferSize, Timeout parseTimeout, Timeout baseReplyTimeout) : mConnection(connection) { C::mip_interface_init(this, parseBuffer, parseBufferSize, parseTimeout, baseReplyTimeout); }
 
     DeviceInterface(const DeviceInterface&) = delete;

@@ -259,7 +259,7 @@ if(BUILD_DOCUMENTATION)
     set(DOXYGEN_WARN_IF_UNDOCUMENTED NO)
 
     if(NOT MIP_DISABLE_CPP)
-        set(DOXYGEN_PREDEFINED "__cplusplus")
+        set(DOXYGEN_PREDEFINED "")
     endif()
 
     set(DOXYGEN_EXTRACT_ALL YES)

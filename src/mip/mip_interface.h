@@ -157,9 +157,8 @@ extern bool mip_interface_user_send_to_device(mip_interface* device, const uint8
 ///@}
 ////////////////////////////////////////////////////////////////////////////////
 
-
 #ifdef __cplusplus
-} // namespace mip
-} // namespace C
 } // extern "C"
+} // namespace C
+} // namespace mip
 #endif

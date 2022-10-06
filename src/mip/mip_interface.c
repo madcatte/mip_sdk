@@ -9,9 +9,14 @@
 
 #include <stdio.h>
 
+#ifdef DOXYGEN
+namespace mip {
+namespace C {
+extern "C" {
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 ///@brief Wrapper around mip_interface_receive_packet for use with mip_parser.
-///
 ///@param device    Void pointer to the device. Must be a mip_interface pointer.
 ///@param packet    MIP Packet from the parser.
 ///@param timestamp timestamp_type of the packet.
@@ -29,7 +34,7 @@ bool mip_interface_parse_callback(void* device, const mip_packet* packet, timest
 ///@brief Initialize the mip_interface components.
 ///
 ///@param device
-///
+///       Pointer to a mip_interface struct that will be initialized by this function
 ///@param parse_buffer
 ///       A working buffer for the MIP parser. See mip_parser_init().
 ///@param parse_buffer_size
@@ -337,6 +342,11 @@ enum mip_cmd_result mip_interface_run_command(mip_interface* device, uint8_t des
 ///@param response_descriptor
 ///       Descriptor of the response data. May be MIP_INVALID_FIELD_DESCRIPTOR
 ///       if no response is expected.
+///@param response_buffer
+///       Optional buffer to store response in. May be NULL if response_length_inout is also NULL
+///@param response_length_inout
+///       Optional pointer to a length that will be filled out if there is a response.
+///       May be NULL if response_buffer is also NULL
 ///
 enum mip_cmd_result mip_interface_run_command_with_response(mip_interface* device,
     uint8_t descriptor_set, uint8_t cmd_descriptor, const uint8_t* cmd_data, uint8_t cmd_length,
@@ -474,3 +484,9 @@ void mip_interface_register_extractor(
     mip_dispatch_handler_init_extractor(handler, descriptor_set, field_descriptor, extractor, field_ptr);
     mip_dispatcher_add_handler(&device->_dispatcher, handler);
 }
+
+#ifdef DOXYGEN
+}  // extern "C"
+}  // namespace C
+}  // namespace mip
+#endif
