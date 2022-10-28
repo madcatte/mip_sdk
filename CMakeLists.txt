@@ -78,6 +78,8 @@ set(MIP_TIMESTAMP_TYPE "uint64_t" CACHE STRING "Override the type used for recei
 
 option(BUILD_PACKAGE "Whether to build a package from the resulting binaries" OFF)
 
+option(BUILD_NODE "Whether or not to build node bindings" OFF)
+
 #
 # Utils
 #
@@ -288,6 +290,62 @@ if(BUILD_DOCUMENTATION)
         COMMAND ${CMAKE_COMMAND} -E tar "cf" "${CMAKE_CURRENT_BINARY_DIR}/mipsdk_${MIP_GIT_VERSION}_Documentation.zip" --format=zip "."
     )
 endif(BUILD_DOCUMENTATION)
+
+if(BUILD_NODE)
+    cmake_policy(SET CMP0078 NEW)
+    cmake_policy(SET CMP0086 NEW)
+    find_package(SWIG REQUIRED)
+    include(UseSWIG)
+
+    set(SWIG_SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/bindings/swig/mip_sdk.i")
+    set_property(SOURCE ${SWIG_SOURCE_FILES} PROPERTY CPLUSPLUS ON)
+
+    if(BUILD_NODE)
+        # Only build C files for the node binding
+        set(NODE_SRC_FILES "${ALL_MIP_SOURCES}")
+        list(FILTER NODE_SRC_FILES EXCLUDE REGEX "[c|h]pp$")
+
+        # Generate the node interface C++ file
+        set(NODE_OUTFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}/node")
+        set(NODE_INTERFACE_FILE "${NODE_OUTFILE_DIR}/mip_sdk_node_wrap.cxx")
+        add_custom_command(
+            OUTPUT ${NODE_INTERFACE_FILE}
+            COMMAND ${CMAKE_COMMAND} -E env SWIG_LIB=${SWIG_DIR} "${SWIG_EXECUTABLE}" -javascript -node -I"${SRC_DIR}" -outdir "${NODE_OUTFILE_DIR}" -c++ -o "${NODE_INTERFACE_FILE}" "${SWIG_SOURCE_FILES}"
+            DEPENDS ${SWIG_SOURCE_FILES} ${NODE_SRC_FILES}
+        )
+
+        # Generate a binding.gyp file
+        file(RELATIVE_PATH NODE_INTERFACE_FILE_RELATIVE "${NODE_OUTFILE_DIR}" "${NODE_INTERFACE_FILE}")
+        set(NODE_GYP_SOURCE_FILES "\"${NODE_INTERFACE_FILE_RELATIVE}\"")
+        foreach(SRC_FILE IN LISTS NODE_SRC_FILES)
+            file(RELATIVE_PATH SRC_FILE_RELATIVE "${NODE_OUTFILE_DIR}" "${SRC_FILE}")
+            set(NODE_GYP_SOURCE_FILES "${NODE_GYP_SOURCE_FILES}, \"${SRC_FILE_RELATIVE}\"")
+        endforeach()
+        set(NODE_BINDING_GYP_TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/bindings/swig/binding.gyp.template")
+        set(NODE_BINDING_GYP "${NODE_OUTFILE_DIR}/binding.gyp")
+        configure_file(${NODE_BINDING_GYP_TEMPLATE} ${NODE_BINDING_GYP})
+
+        # Hand off the build to node GYP
+        string(TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_UPPER)
+        if(CMAKE_BUILD_TYPE_UPPER STREQUAL "DEBUG" OR CMAKE_BUILD_TYPE_UPPER STREQUAL "")
+            set(NODE_GYP_FLAGS "--debug")
+            set(NODE_LIBRARY "${NODE_OUTFILE_DIR}/build/Debug/mip_sdk.node")
+        else()
+            set(NODE_LIBRARY "${NODE_OUTFILE_DIR}/build/Release/mip_sdk.node")
+        endif()
+        add_custom_command(
+            OUTPUT "${NODE_LIBRARY}"
+            COMMAND ${CMAKE_COMMAND} -E env node-gyp -C "${NODE_OUTFILE_DIR}" configure
+            COMMAND ${CMAKE_COMMAND} -E env JOBS=max node-gyp ${NODE_GYP_FLAGS} -C "${NODE_OUTFILE_DIR}" build
+            DEPENDS ${NODE_BINDING_GYP} ${NODE_INTERFACE_FILE} ${NODE_SRC_FILES}
+        )
+
+        # Make a fake target so we can build the binding
+        add_custom_target(mip_nodejs ALL
+            DEPENDS "${NODE_LIBRARY}"
+        )
+    endif()
+endif()
 
 #
 # Packaging

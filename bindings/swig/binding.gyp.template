@@ -1,0 +1,31 @@
+{
+    "targets": [
+        {
+            "target_name": "mip_sdk",
+            "sources": [
+                ${NODE_GYP_SOURCE_FILES}
+            ],
+            "include_dirs": [
+                '${SRC_DIR}'
+            ],
+            'defines': [
+                'SWIG'
+            ],
+            'conditions': [
+                ['OS=="win"', {
+                }, {
+                    'cflags': [
+                        '-Wno-cast-function-type',
+                        '-Wno-ignored-qualifiers',
+                        '-Wno-unused-result'
+                    ],
+                    'cflags_cc': [
+                        '-Wno-cast-function-type',
+                        '-Wno-ignored-qualifiers',
+                        '-Wno-unused-result'
+                    ]
+                }]
+            ]
+        }
+    ]
+}

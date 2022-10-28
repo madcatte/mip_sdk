@@ -5,6 +5,7 @@
 #else
 #include <errno.h>
 #include <unistd.h>
+#include <sys/time.h>
 #include <sys/socket.h>
 #include <netinet/ip.h>
 #include <netdb.h>
