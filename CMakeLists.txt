@@ -17,7 +17,10 @@ set(SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/src")
 set(EXT_DIR "${CMAKE_CURRENT_LIST_DIR}/ext")
 set(MIP_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
+set(GENERATED_SRC_DIR "${CMAKE_CURRENT_BINARY_DIR}/src")
+
 include_directories(
+    "${GENERATED_SRC_DIR}"
     "${SRC_DIR}"
 )
 
@@ -61,18 +64,13 @@ list(GET MIP_GIT_VERSION_LIST 0 MIP_GIT_VERSION_MAJOR)
 list(GET MIP_GIT_VERSION_LIST 1 MIP_GIT_VERSION_MINOR)
 list(GET MIP_GIT_VERSION_LIST 2 MIP_GIT_VERSION_PATCH)
 
-# Generate the version header file
-set(VERSION_IN_FILE "${MIP_CMAKE_DIR}/mip_version.h.in")
-set(VERSION_OUT_FILE "${MIP_DIR}/mip_version.h")
-configure_file(${VERSION_IN_FILE} ${VERSION_OUT_FILE})
-
 #
 # Build options
 #
 
-option(MIP_USE_SERIAL "Build serial connection support into the library and examples" ON)
-option(MIP_USE_TCP    "Build TCP connection support into the library and exampels" ON)
-option(MIP_USE_EXTRAS "Build extra support into the library including some things that might work at a higher level and use dynamically allocated memory" ON)
+option(MIP_ENABLE_SERIAL "Build serial connection support into the library and examples" ON)
+option(MIP_ENABLE_TCP    "Build TCP connection support into the library and exampels" ON)
+option(MIP_ENABLE_EXTRAS "Build extra support into the library including some things that might work at a higher level and use dynamically allocated memory" ON)
 
 option(MIP_ENABLE_LOGGING "Build with logging functions enabled" ON)
 set(MIP_LOGGING_MAX_LEVEL "" CACHE STRING "Max log level the SDK is allowed to log. If this is defined, any log level logged at a higher level than this will result in a noop regardless of runtime configuration.")
@@ -97,6 +95,9 @@ set(UTILS_SOURCES
 #
 # MIP Control
 #
+
+set(VERSION_IN_FILE "${MIP_CMAKE_DIR}/mip_version.h.in")
+set(VERSION_OUT_FILE "${GENERATED_SRC_DIR}/mip/mip_version.h")
 
 set(MIP_SOURCES
     "${VERSION_OUT_FILE}"
@@ -156,7 +157,8 @@ set(MIPDEF_SOURCES
 string(REPLACE ".h" ".hpp" MIPDEF_HPP_SOURCES "${MIPDEF_SOURCES}")
 string(REPLACE ".c" ".cpp" MIPDEF_CPP_SOURCES "${MIPDEF_HPP_SOURCES}")
 
-if(MIP_USE_SERIAL)
+if(MIP_ENABLE_SERIAL)
+    list(APPEND MIP_DEFINES "MIP_ENABLE_SERIAL")
     list(APPEND UTILS_SOURCES
         "${UTILS_DIR}/serial_port.c"
         "${UTILS_DIR}/serial_port.h"
@@ -166,7 +168,8 @@ if(MIP_USE_SERIAL)
         "${MIP_DIR}/platform/serial_connection.cpp"
     )
 endif()
-if(MIP_USE_TCP)
+if(MIP_ENABLE_TCP)
+    list(APPEND MIP_DEFINES "MIP_ENABLE_TCP")
     list(APPEND UTILS_SOURCES
         "${UTILS_DIR}/tcp_socket.c"
         "${UTILS_DIR}/tcp_socket.h"
@@ -176,7 +179,8 @@ if(MIP_USE_TCP)
         "${MIP_DIR}/platform/tcp_connection.cpp"
     )
 endif()
-if(MIP_USE_EXTRAS)
+if(MIP_ENABLE_EXTRAS)
+    list(APPEND MIP_DEFINES "MIP_ENABLE_EXTRAS")
     set(MIP_EXTRAS_DIR "${MIP_DIR}/extras")
     set(MIP_EXTRA_SOURCES
         "${MIP_EXTRAS_DIR}/recording_connection.hpp"
@@ -207,15 +211,13 @@ if(MIP_DISABLE_CPP)
     list(FILTER ALL_MIP_SOURCES EXCLUDE REGEX "[c|h]pp$")
 endif()
 
-add_library(mip ${ALL_MIP_SOURCES})
-target_compile_definitions(mip PUBLIC "${MIP_DEFINES}")
-
 if(${MIP_LOGGING_MAX_LEVEL})
-    add_compile_definitions("MIP_LOGGING_MAX_LEVEL=${MIP_LOGGING_MAX_LEVEL}")
+    list(APPEND MIP_DEFINES "MIP_LOGGING_MAX_LEVEL=${MIP_LOGGING_MAX_LEVEL}")
 endif()
-if(${MIP_TIMESTAMP_TYPE})
-    add_compile_definitions("MIP_TIMESTAMP_TYPE=${MIP_TIMESTAMP_TYPE}")
-endif()
+list(APPEND MIP_DEFINES "MIP_TIMESTAMP_TYPE=${MIP_TIMESTAMP_TYPE}")
+
+add_library(mip ${ALL_MIP_SOURCES})
+target_compile_definitions(mip PRIVATE "${MIP_DEFINES}")
 
 # Disable windows defined min/max
 if(WIN32)
@@ -227,6 +229,21 @@ if(MSVC)
 else()
   target_compile_options(mip PRIVATE -Wall -Wextra)
 endif()
+
+# Extract the definitions defined on the target
+set(MIP_COMPILE_DEFINITIONS_DEFINES)
+get_target_property(MIP_COMPILE_DEFINITIONS mip COMPILE_DEFINITIONS)
+foreach(MIP_COMPILE_DEFINITION ${MIP_COMPILE_DEFINITIONS})
+    if(NOT MIP_COMPILE_DEFINITION MATCHES ".*=.*")
+        set(MIP_COMPILE_DEFINITION "${MIP_COMPILE_DEFINITION} 1")
+    endif()
+    string(REPLACE "=" " " MIP_COMPILE_DEFINITION "${MIP_COMPILE_DEFINITION}")
+    set(MIP_COMPILE_DEFINITION_DEFINE "#define MIP_SDK_COMPILED_WITH_${MIP_COMPILE_DEFINITION}\n")
+    set(MIP_COMPILE_DEFINITIONS_DEFINES "${MIP_COMPILE_DEFINITIONS_DEFINES}${MIP_COMPILE_DEFINITION_DEFINE}")
+endforeach()
+
+# Generate the version header file
+configure_file(${VERSION_IN_FILE} ${VERSION_OUT_FILE})
 
 #
 # TESTING

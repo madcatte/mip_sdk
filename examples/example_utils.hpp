@@ -1,13 +1,13 @@
 
 #pragma once
 
-#ifdef MIP_USE_SERIAL
+#ifdef MIP_ENABLE_SERIAL
     #include "mip/platform/serial_connection.hpp"
 #endif
-#ifdef MIP_USE_TCP
+#ifdef MIP_ENABLE_TCP
     #include "mip/platform/tcp_connection.hpp"
 #endif
-#ifdef MIP_USE_EXTRAS
+#ifdef MIP_ENABLE_EXTRAS
     #include "mip/extras/recording_connection.hpp"
 #endif
 

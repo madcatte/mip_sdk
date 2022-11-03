@@ -57,7 +57,7 @@ A basic serial port interface is provided in C and C++ for Linux and Windows. Th
 The serial port connection will be used in most cases, when the MIP device is connected
 via a serial or USB cable (the USB connection acts like a virtual serial port).
 
-Enable it in the CMake configuration with `-DMIP_USE_SERIAL=1`.
+Enable it in the CMake configuration with `-DMIP_ENABLE_SERIAL=1`.
 
 ### TCP Client
 
@@ -65,7 +65,7 @@ The TCP client connection allows you to connect to a MIP device remotely. The MI
 via the normal serial or USB cable to a commputer system running a TCP server which forwards data between
 the serial port and TCP clients.
 
-Enable it in the CMake configuration with `-DMIP_USE_TCP=1`.
+Enable it in the CMake configuration with `-DMIP_ENABLE_TCP=1`.
 
 
 How to Build
@@ -85,9 +85,9 @@ How to Build
 ### Build configuration
 
 The following options may be specified when configuring the build with CMake (e.g. `cmake .. -DOPTION=VALUE`):
-* MIP_USE_SERIAL - Builds the included serial port library (default enabled).
-* MIP_USE_TCP - Builds the included socket library (default enabled).
-* MIP_USE_EXTRAS - Builds some higher level utility classes and functions that may use dynamic memory. (default enabled)
+* MIP_ENABLE_SERIAL - Builds the included serial port library (default enabled).
+* MIP_ENABLE_TCP - Builds the included socket library (default enabled).
+* MIP_ENABLE_EXTRAS - Builds some higher level utility classes and functions that may use dynamic memory. (default enabled)
 * MIP_ENABLE_LOGGING - Builds logging functionality into the library. The user is responsible for configuring a logging callback (default enabled)
 * MIP_LOGGING_MAX_LEVEL - Max log level the SDK is allowed to log. If this is defined, any log level logged at a higher level than this will result in a noop regardless of runtime configuration. Useful if you want some logs, but do not want the overhead of the higher level functions compiled into the code
 * BUILD_EXAMPLES - If enabled (`-DBUILD_EXAMPLES=ON`), the example projects will be built (default disabled).
@@ -103,7 +103,7 @@ The following options may be specified when configuring the build with CMake (e.
 
 1. Create the build directory (e.g. `mkdir build`).
 2. In the build directory, run `cmake .. <options>`
-   * Replace `<options>` with your configuration options, such as `-DMIP_USE_SERIAL=1`.
+   * Replace `<options>` with your configuration options, such as `-DMIP_ENABLE_SERIAL=1`.
    * You can use `cmake-gui ..` instead if you'd prefer to use the GUI tool (and have it installed).
    * An alternative generator may be used, such as ninja, code blocks, etc. by specifying `-G <generatopr>`
 3. Invoke `cmake --build .` in the build directory

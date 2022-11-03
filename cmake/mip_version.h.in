@@ -8,3 +8,6 @@
 #define MIP_SDK_VERSION_MAJOR ${MIP_GIT_VERSION_MAJOR}
 #define MIP_SDK_VERSION_MINOR ${MIP_GIT_VERSION_MINOR}
 #define MIP_SDK_VERSION_PATCH ${MIP_GIT_VERSION_PATCH}
+
+// Information on how the library was compiled usable from the preprocessor
+${MIP_COMPILE_DEFINITIONS_DEFINES}
