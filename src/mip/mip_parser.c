@@ -4,6 +4,7 @@
 #include "mip_offsets.h"
 
 #include <assert.h>
+#include <stdio.h>
 
 
 #define MIPPARSER_RESET_LENGTH 1
