@@ -102,7 +102,7 @@ int main(int argc, const char* argv[])
     std::unique_ptr<ExampleUtils> gq7_utils = handleCommonArgs(argc, argv, 7);
     std::unique_ptr<mip::DeviceInterface>& gq7_device = gq7_utils->device;
 
-    std::unique_ptr<ExampleUtils> cv7_utils = handleCommonArgs(argc - 4, &argv[3]);
+    std::unique_ptr<ExampleUtils> cv7_utils = handleCommonArgs(argc - 3, &argv[3]);
     std::unique_ptr<mip::DeviceInterface>& cv7_device = cv7_utils->device;
 
 
@@ -267,6 +267,10 @@ int main(int argc, const char* argv[])
     gq7_device->registerExtractor(gq7_filter_data_handlers[4], &gq7_filter_attitude_quaternion);
     gq7_device->registerExtractor(gq7_filter_data_handlers[5], &gq7_filter_dual_antenna_status);
 
+    //Temporary for testing, record factory support
+    if (mip::commands_3dm::factoryStreaming(*gq7_device, mip::commands_3dm::FactoryStreaming::Action::MERGE, 0) != CmdResult::ACK_OK)
+        exit_gracefully("Couldn't set factory streaming");
+
 
     //
     //Resume the device
@@ -385,6 +389,7 @@ int main(int argc, const char* argv[])
     //    exit_gracefully("ERROR: Unable to map frame id on CV7 for filter measurements from GQ7");
 
     //Sensor ID 2 will be for measurements measured from GNSS antenna 1 on the GQ7
+    //TODO: Rotate the antenna offset by the GQ7 rotation
     uint8_t gq7_gnss_sensor_id = 2;
     float cv7_to_gnss_translation[3] =
     {
@@ -420,6 +425,9 @@ int main(int argc, const char* argv[])
     cv7_device->registerExtractor(cv7_filter_data_handlers[3], &cv7_filter_velocity_ned);
     cv7_device->registerExtractor(cv7_filter_data_handlers[4], &cv7_filter_euler_angles);
 
+    //Temporary for testing, record factory support
+    if (mip::commands_3dm::factoryStreaming(*cv7_device, mip::commands_3dm::FactoryStreaming::Action::MERGE, 0) != CmdResult::ACK_OK)
+        exit_gracefully("Couldn't set factory streaming");
 
     //
     //Resume the device
@@ -468,9 +476,9 @@ int main(int argc, const char* argv[])
         //Check GQ7 dual antenna status
         if(!gq7_filter_dual_antenna_status_fix)
         {
-            gq7_filter_dual_antenna_status_fix = gq7_filter_dual_antenna_status.valid_flags != 1 &&
+            gq7_filter_dual_antenna_status_fix = gq7_filter_dual_antenna_status.valid_flags == 1 &&
                                              (
-                                                gq7_filter_dual_antenna_status.fix_type == data_filter::GnssDualAntennaStatus::FixType::FIX_DA_FIXED  ||
+                                                gq7_filter_dual_antenna_status.fix_type == data_filter::GnssDualAntennaStatus::FixType::FIX_DA_FIXED ||
                                                 gq7_filter_dual_antenna_status.fix_type == data_filter::GnssDualAntennaStatus::FixType::FIX_DA_FLOAT
                                              );
             if(gq7_filter_dual_antenna_status_fix)
