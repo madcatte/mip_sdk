@@ -51,6 +51,12 @@ if(MIP_USE_SERIAL OR MIP_USE_TCP)
         target_link_libraries(GX5_45_Example mip "${SERIAL_LIB}" "${SOCKET_LIB}")
         target_compile_definitions(GX5_45_Example PUBLIC "${MIP_EXAMPLE_DEFS}")
 
+        if (MIP_USE_EXTRAS)
+            add_executable(CV7_INS_GQ7_Example "${EXAMPLE_SOURCES}" "${EXAMPLE_DIR}/CV7_INS/CV7_INS_GQ7_example.cpp" ${DEVICE_SOURCES})
+            target_link_libraries(CV7_INS_GQ7_Example mip "${SERIAL_LIB}" "${SOCKET_LIB}")
+            target_compile_definitions(CV7_INS_GQ7_Example PUBLIC "${MIP_EXAMPLE_DEFS}")
+        endif()
+
     endif()
 
 endif()
