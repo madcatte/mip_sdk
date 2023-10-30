@@ -185,3 +185,26 @@ The C++ API uses `TitleCase` for types and `camelCase` for functions and variabl
 everything. This makes it easy to tell which is being used when looking at the examples.
 
 The C API can be accessed directly from C++ via the `mip::C` namesace.
+
+### Configuring an UBlox F9P receiver to output PVT messages using u-center
+
+1.) Open u-center (download here: https://www.u-blox.com/en/product/u-center)
+
+2.) In the dropdown shown below, click the port connected to the receiver. In this example, the receiver is connected over COM27.
+![image](https://github.com/LORD-MicroStrain/mip_sdk/assets/126186985/b2dd4116-c653-4d4c-b660-fd13cfb9af1b)
+
+3.)	To see what message types the receiver is currently streaming, click on View > Packet Console, or press F6. 
+If there are packets streaming, you should see them appear at a regular interval. 
+
+![image](https://github.com/LORD-MicroStrain/mip_sdk/assets/126186985/84bb59fc-bae6-4481-b9b9-deb4f85334d3)
+
+4.) To show all the available message types, click on View > Messages View, or press F9. This will open a separate window. 
+The bolded message names are ones currently being sent from the receiver through the port.
+
+![image](https://github.com/LORD-MicroStrain/mip_sdk/assets/126186985/52b4a4de-8ddf-4981-8513-e58dded21e44)
+
+5.) To toggle whether a message is selected, double click on its name. To select the PVT message, click UBX > NAV > PVT as shown below. 
+
+![image](https://github.com/LORD-MicroStrain/mip_sdk/assets/126186985/d5c73c22-018b-4622-bf88-55feb08a9412)
+
+6.)	To verify the changes made, open the Packet Console from step three to view what packets are streaming.
