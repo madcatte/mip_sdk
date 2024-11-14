@@ -1,3 +1,6 @@
+#pragma once
+
+#include "cpp/mip/metadata/mip_definitions.hpp"
 
 #include "definitions/commands_3dm.hpp"
 #include "definitions/commands_aiding.hpp"
