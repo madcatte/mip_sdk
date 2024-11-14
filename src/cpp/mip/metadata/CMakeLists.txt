@@ -15,7 +15,7 @@ if(MICROSTRAIN_CMAKE_DEBUG)
 endif()
 
 add_library(${MIP_METADATA_LIBRARY}
-    "${CMAKE_CURRENT_LIST_DIR}/mip_all_definitions.hpp"
+    "${CMAKE_CURRENT_LIST_DIR}/mip_metadata_all.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/mip_definitions.hpp"
     "${CMAKE_CURRENT_LIST_DIR}/mip_definitions.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/mip_metadata.hpp"

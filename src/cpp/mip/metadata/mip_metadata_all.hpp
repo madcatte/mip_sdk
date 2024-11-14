@@ -1,7 +1,5 @@
 #pragma once
 
-#include "cpp/mip/metadata/mip_definitions.hpp"
-
 #include "definitions/commands_3dm.hpp"
 #include "definitions/commands_aiding.hpp"
 #include "definitions/commands_base.hpp"
@@ -16,17 +14,19 @@
 #include "definitions/data_shared.hpp"
 #include "definitions/data_system.hpp"
 
+#include "mip_definitions.hpp"
+
 namespace mip::metadata
 {
 
-static constexpr inline std::initializer_list< const std::initializer_list<const FieldInfo*>* > ALL_COMMANDS = {
-    &COMMANDS_3DM,
-    &COMMANDS_AIDING,
-    &COMMANDS_BASE,
-    &COMMANDS_FILTER,
-    &COMMANDS_GNSS,
-    &COMMANDS_RTK,
-    &COMMANDS_SYSTEM,
+static constexpr inline std::array<const Definitions::FieldInfoSpan, 7> ALL_COMMANDS = {
+    COMMANDS_3DM,
+    COMMANDS_AIDING,
+    COMMANDS_BASE,
+    COMMANDS_FILTER,
+    COMMANDS_GNSS,
+    COMMANDS_RTK,
+    COMMANDS_SYSTEM,
 };
 static constexpr inline std::initializer_list< const std::initializer_list<const FieldInfo*>* > ALL_DATA = {
     &DATA_FILTER,
