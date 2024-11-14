@@ -28,29 +28,29 @@ static constexpr inline std::array<const Definitions::FieldInfoSpan, 7> ALL_COMM
     COMMANDS_RTK,
     COMMANDS_SYSTEM,
 };
-static constexpr inline std::initializer_list< const std::initializer_list<const FieldInfo*>* > ALL_DATA = {
-    &DATA_FILTER,
-    &DATA_GNSS,
-    &DATA_SENSOR,
-    &DATA_SHARED,
-    &DATA_SYSTEM,
+static constexpr inline std::array<const Definitions::FieldInfoSpan, 5> ALL_DATA = {
+    DATA_FILTER,
+    DATA_GNSS,
+    DATA_SENSOR,
+    DATA_SHARED,
+    DATA_SYSTEM,
 };
 
-static constexpr inline std::initializer_list< const std::initializer_list< const FieldInfo* >* > ALL_FIELDS = {
+static constexpr inline std::array<const Definitions::FieldInfoSpan, 12> ALL_FIELDS = {
     // Commands
-    &COMMANDS_3DM,
-    &COMMANDS_AIDING,
-    &COMMANDS_BASE,
-    &COMMANDS_FILTER,
-    &COMMANDS_GNSS,
-    &COMMANDS_RTK,
-    &COMMANDS_SYSTEM,
+    COMMANDS_3DM,
+    COMMANDS_AIDING,
+    COMMANDS_BASE,
+    COMMANDS_FILTER,
+    COMMANDS_GNSS,
+    COMMANDS_RTK,
+    COMMANDS_SYSTEM,
     // Data
-    &DATA_FILTER,
-    &DATA_GNSS,
-    &DATA_SENSOR,
-    &DATA_SHARED,
-    &DATA_SYSTEM,
+    DATA_FILTER,
+    DATA_GNSS,
+    DATA_SENSOR,
+    DATA_SHARED,
+    DATA_SYSTEM,
 };
 
 } // namespace mip::metadata
