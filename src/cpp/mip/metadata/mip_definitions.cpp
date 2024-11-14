@@ -12,15 +12,15 @@ void Definitions::registerField(const mip::metadata::FieldInfo* field)
     mFields.insert(field);
 }
 
-void Definitions::registerDefinitions(std::initializer_list<const FieldInfo *> fields)
+void Definitions::registerDefinitions(const FieldInfoSpan &fields)
 {
-    mFields.insert(fields);
+    for (const FieldInfo *field : fields)
+        mFields.insert(field);
 }
 
-void Definitions::registerDefinitions(
-    const std::initializer_list< const std::initializer_list<const FieldInfo* >* >& fields)
+void Definitions::registerDefinitions(const FieldInfoSpans &fields)
 {
-    for(const auto* sublist : fields)
+    for (const auto* sublist : fields)
         registerDefinitions(*sublist);
 }
 

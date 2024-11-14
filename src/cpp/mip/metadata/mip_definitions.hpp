@@ -33,12 +33,15 @@ class Definitions
     using Container = std::set<const FieldInfo *, Less>;
 
 public:
+    using FieldInfoSpan  = microstrain::Span<const FieldInfo* const>;
+    using FieldInfoSpans = microstrain::Span<const FieldInfoSpan* const>;
+
     Definitions() = default;
-    Definitions(const std::initializer_list<const std::initializer_list<const FieldInfo*>*>& fields) { registerDefinitions(fields); }
+    Definitions(const FieldInfoSpans &fields) { registerDefinitions(fields); }
 
     void registerField(const FieldInfo* field);
-    void registerDefinitions(std::initializer_list<const FieldInfo*> fields);
-    void registerDefinitions(const std::initializer_list<const std::initializer_list<const FieldInfo*>*>& fields);
+    void registerDefinitions(const FieldInfoSpan &fields);
+    void registerDefinitions(const FieldInfoSpans &fields);
 
     const FieldInfo* findField(mip::CompositeDescriptor descriptor) const;
 
